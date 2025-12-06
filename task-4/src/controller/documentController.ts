@@ -1,8 +1,7 @@
 import type { Request, Response } from "express";
 import { extractText } from "../service/extract";
 import { analyzeWithLLM } from "../service/ai";
-
-export let documents: any = {};
+import { dbService } from "../service/database";
 
 export const uploadDocument = async (req: Request, res: Response) => {
   try {
@@ -20,16 +19,17 @@ export const uploadDocument = async (req: Request, res: Response) => {
       const text = await extractText(file.path);
 
       const id = Date.now().toString();
-      documents[id] = {
+      
+      dbService.create({
         id,
         filename: file.originalname,
         path: file.path,
         text,
         summary: null,
         metadata: null,
-      };
+      });
 
-      console.log(`Document uploaded with ID: ${id}. Total documents in memory: ${Object.keys(documents).length}`);
+      console.log(`Document uploaded with ID: ${id} and saved to database`);
 
       return res
         .status(201)
@@ -53,14 +53,12 @@ export const analyzeDocument = async (req: Request, res: Response) => {
     const id = req.params.id;
     if (!id) return res.status(400).json({ error: "Document ID is required" });
 
-    const doc = documents[id];
+    const doc = dbService.getById(id);
     if (!doc) return res.status(404).json({ error: "Document not found" });
 
     const analysis = await analyzeWithLLM(doc.text);
 
-    doc.summary = analysis.summary;
-    doc.metadata = analysis.metadata;
-    doc.type = analysis.type;
+    dbService.updateAnalysis(id, analysis.summary, analysis.metadata, analysis.type);
 
     return res.status(200).json({ message: "Analysis complete", ...analysis });
   } catch (error) {
@@ -74,12 +72,9 @@ export const getDocument = (req: Request, res: Response) => {
     const id = req.params.id;
     if (!id) return res.status(400).json({ error: "Document ID is required" });
 
-    console.log(`Looking for document ID: ${id}`);
-    console.log(`Available document IDs: ${Object.keys(documents).join(", ") || "none"}`);
-    
-    const doc = documents[id];
+    const doc = dbService.getById(id);
     if (!doc) {
-      console.log(`Document ${id} not found in memory. Total documents: ${Object.keys(documents).length}`);
+      console.log(`Document ${id} not found in database`);
       return res.status(404).json({ error: "Document not found" });
     }
 

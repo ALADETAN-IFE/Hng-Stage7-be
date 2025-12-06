@@ -6,7 +6,6 @@ import documentRoutes from "./routes/documentRoutes";
 
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 const PORT = process.env.PORT || 4000;

@@ -1,6 +1,5 @@
 import { OpenRouter } from "@openrouter/sdk";
 
-// Initialize OpenRouter client
 const openRouter = new OpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY || "",
 });
@@ -9,7 +8,7 @@ export async function analyzeWithLLM(text: string) {
   const prompt = `
 You are an AI that analyzes documents.
 
-Given the text below, return in strict JSON:
+Given the text below, return ONLY valid JSON (no markdown, no code blocks, just the raw JSON):
 {
   "summary": "...",
   "type": "invoice | letter | cv | report | unknown",
@@ -40,5 +39,25 @@ ${text}
     ? message.content 
     : JSON.stringify(message.content);
 
-  return JSON.parse(content);
+  let jsonString = content.trim();
+  
+  const codeBlockRegex = /^```(?:json)?\s*\n([\s\S]*?)\n```$/;
+  const match = jsonString.match(codeBlockRegex);
+  if (match) {
+    jsonString = match[1].trim();
+  }
+  
+  if (!jsonString.startsWith('{') && !jsonString.startsWith('[')) {
+    const jsonMatch = jsonString.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      jsonString = jsonMatch[0];
+    }
+  }
+
+  try {
+    return JSON.parse(jsonString);
+  } catch (parseError) {
+    console.error("Failed to parse LLM response as JSON:", jsonString);
+    throw new Error(`Failed to parse AI response: ${parseError instanceof Error ? parseError.message : "Unknown error"}`);
+  }
 }
