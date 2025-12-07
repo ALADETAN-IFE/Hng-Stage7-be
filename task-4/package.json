@@ -1,7 +1,7 @@
 {
   "name": "task-4",
   "version": "1.0.0",
-  "description": "",
+  "description": "A Node.js/TypeScript service that accepts PDF or DOCX files, extracts text, and uses AI (OpenRouter) to generate summaries, detect document types, and extract metadata.",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.ts",
