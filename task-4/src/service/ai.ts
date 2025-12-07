@@ -1,10 +1,11 @@
 import { OpenRouter } from "@openrouter/sdk";
+import type { AnalysisResult } from "../types";
 
 const openRouter = new OpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY || "",
 });
 
-export async function analyzeWithLLM(text: string) {
+export async function analyzeWithLLM(text: string): Promise<AnalysisResult> {
   const prompt = `
 You are an AI that analyzes documents.
 

@@ -35,7 +35,7 @@ export const upload = multer({
 });
 
 export const uploadErrorHandler = (
-  err: any,
+  err: unknown,
   req: Request,
   res: Response,
   next: NextFunction
@@ -46,7 +46,7 @@ export const uploadErrorHandler = (
       return res.status(400).json({ error: "File size exceeds 5MB limit" });
     }
     return res.status(400).json({ error: `Upload error: ${err.message}` });
-  } else if (err) {
+  } else if (err instanceof Error) {
     console.error("Upload middleware error:", err);
     return res.status(400).json({ error: err.message });
   }

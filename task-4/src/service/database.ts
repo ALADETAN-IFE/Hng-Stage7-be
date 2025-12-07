@@ -1,6 +1,7 @@
 import Database from "better-sqlite3";
 import path from "path";
 import fs from "fs";
+import type { DocumentMetadata, DocumentRow, Document, CreateDocumentInput } from "../types";
 
 const dataDir = path.join(process.cwd(), "data");
 if (!fs.existsSync(dataDir)) {
@@ -26,24 +27,16 @@ db.exec(`
   )
 `);
 
-const serialize = (obj: any): string | null => {
+const serialize = (obj: DocumentMetadata | null | undefined): string | null => {
   return obj ? JSON.stringify(obj) : null;
 };
 
-const deserialize = (str: string | null): any => {
+const deserialize = (str: string | null): DocumentMetadata | null => {
   return str ? JSON.parse(str) : null;
 };
 
 export const dbService = {
-  create: (doc: {
-    id: string;
-    filename: string;
-    path: string;
-    text: string;
-    summary?: string | null;
-    metadata?: any;
-    type?: string;
-  }) => {
+  create: (doc: CreateDocumentInput) => {
     const stmt = db.prepare(`
       INSERT INTO documents (id, filename, path, text, summary, metadata, type)
       VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -60,9 +53,9 @@ export const dbService = {
     );
   },
 
-  getById: (id: string) => {
+  getById: (id: string): Document | null => {
     const stmt = db.prepare("SELECT * FROM documents WHERE id = ?");
-    const row = stmt.get(id) as any;
+    const row = stmt.get(id) as DocumentRow | undefined;
     
     if (!row) return null;
     
@@ -79,7 +72,7 @@ export const dbService = {
     };
   },
 
-  updateAnalysis: (id: string, summary: string, metadata: any, type: string) => {
+  updateAnalysis: (id: string, summary: string, metadata: DocumentMetadata, type: string) => {
     const stmt = db.prepare(`
       UPDATE documents 
       SET summary = ?, metadata = ?, type = ?, updated_at = CURRENT_TIMESTAMP
@@ -89,9 +82,9 @@ export const dbService = {
     stmt.run(summary, serialize(metadata), type, id);
   },
 
-  getAll: () => {
+  getAll: (): Document[] => {
     const stmt = db.prepare("SELECT * FROM documents ORDER BY created_at DESC");
-    const rows = stmt.all() as any[];
+    const rows = stmt.all() as DocumentRow[];
     
     return rows.map((row) => ({
       id: row.id,
