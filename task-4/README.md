@@ -11,6 +11,7 @@ A Node.js/TypeScript service that accepts PDF or DOCX files, extracts text, and 
   - Document type detection (invoice, CV, report, letter, etc.)
   - Metadata extraction (date, sender, total amount, etc.)
 - 💾 **Persistent Storage**: SQLite database for fast, reliable data persistence
+- ☁️ **Cloud Storage**: Files stored in Backblaze B2 (S3-compatible) for reliable cloud storage
 - 🚀 **Fast Performance**: Optimized with SQLite for sub-millisecond query times
 
 ## Tech Stack
@@ -18,7 +19,8 @@ A Node.js/TypeScript service that accepts PDF or DOCX files, extracts text, and 
 - **Runtime**: Node.js with TypeScript
 - **Framework**: Express.js
 - **Database**: SQLite (better-sqlite3) - Fast, file-based database
-- **File Upload**: Multer
+- **File Upload**: Multer (memory storage)
+- **Cloud Storage**: Backblaze B2 via AWS S3 SDK
 - **AI Integration**: OpenRouter SDK
 - **PDF Parsing**: pdf-parse
 - **DOCX Parsing**: docx-parser
@@ -28,6 +30,21 @@ A Node.js/TypeScript service that accepts PDF or DOCX files, extracts text, and 
 - Node.js (v20.16.0+ or v22.3.0+)
 - npm or yarn
 - OpenRouter API key ([Get one here](https://openrouter.ai/))
+- Backblaze B2 account ([Sign up here](https://www.backblaze.com/b2/sign-up.html))
+
+### Setting up Backblaze B2
+
+1. Create a Backblaze B2 account at [backblaze.com](https://www.backblaze.com/b2/sign-up.html)
+2. Create a bucket in your B2 account
+3. Create an Application Key with read and write permissions:
+   - Go to "App Keys" in your B2 account
+   - Click "Add a New Application Key"
+   - Select your bucket and give it read and write permissions
+   - Save the `keyID` and `applicationKey`
+4. Find your B2 endpoint:
+   - Go to your bucket settings
+   - Note the S3-compatible API endpoint (e.g., `https://s3.us-west-004.backblazeb2.com`)
+   - Note the region (e.g., `us-west-004`)
 
 ## Installation
 
@@ -46,6 +63,13 @@ npm install
 ```env
 PORT=4000
 OPENROUTER_API_KEY=your_openrouter_api_key_here
+
+# Backblaze B2 Configuration (S3-compatible storage)
+B2_BUCKET_NAME=your_bucket_name
+B2_APPLICATION_KEY_ID=your_application_key_id
+B2_APPLICATION_KEY=your_application_key
+B2_REGION=us-west-004
+B2_ENDPOINT=https://s3.us-west-004.backblazeb2.com
 ```
 
 4. Build the project:
@@ -129,7 +153,7 @@ Retrieve a document with all its data including extracted text, summary, and met
 {
   "id": "1765064272974",
   "filename": "document.pdf",
-  "path": "uploads/1765064272974-document.pdf",
+  "path": "documents/1765064272974-document.pdf",
   "text": "Extracted text content...",
   "summary": "This document is an invoice...",
   "metadata": {
@@ -169,7 +193,6 @@ task-4/
 │   └── index.ts                     # Application entry point
 ├── data/
 │   └── documents.db                 # SQLite database (auto-created)
-├── uploads/                         # Uploaded files directory
 ├── .env                             # Environment variables
 ├── package.json
 ├── tsconfig.json
@@ -182,6 +205,11 @@ task-4/
 |----------|-------------|----------|---------|
 | `PORT` | Server port number | No | 4000 |
 | `OPENROUTER_API_KEY` | Your OpenRouter API key | Yes | - |
+| `B2_BUCKET_NAME` | Backblaze B2 bucket name | Yes | - |
+| `B2_APPLICATION_KEY_ID` | Backblaze B2 Application Key ID | Yes | - |
+| `B2_APPLICATION_KEY` | Backblaze B2 Application Key | Yes | - |
+| `B2_REGION` | Backblaze B2 region | No | us-west-004 |
+| `B2_ENDPOINT` | Backblaze B2 S3 endpoint | No | https://s3.us-west-004.backblazeb2.com |
 
 ## Supported File Types
 

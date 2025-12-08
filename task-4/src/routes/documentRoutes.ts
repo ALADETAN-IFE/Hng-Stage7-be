@@ -3,6 +3,7 @@ import {
   uploadDocument,
   analyzeDocument,
   getDocument,
+  getAllDocuments,
 } from "../controller/documentController";
 import { upload, uploadErrorHandler } from "../middleware/uploadMiddleware";
 
@@ -16,6 +17,8 @@ router.post(
 );
 
 router.post("/:id/analyze", analyzeDocument);
+
+router.get("/", getAllDocuments);
 
 router.get("/:id", getDocument);
 
