@@ -1,15 +1,8 @@
 import multer from "multer";
 import type { Request, Response, NextFunction } from "express";
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    const uniqueName = `${Date.now()}-${file.originalname}`;
-    cb(null, uniqueName);
-  },
-});
+// Use memory storage to upload directly to Backblaze B2
+const storage = multer.memoryStorage();
 
 export const upload = multer({
   storage,

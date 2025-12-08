@@ -1,11 +1,12 @@
 import fs from "fs";
 import { parseDocx } from "docx-parser";
 
-export async function extractText(path: string): Promise<string> {
+//  * Extract text from a buffer (used for direct uploads)
+export async function extractTextFromBuffer(buffer: Buffer, filename: string): Promise<string> {
   try {
-    const buffer = fs.readFileSync(path);
+    const lowerFilename = filename.toLowerCase();
 
-    if (path.endsWith(".pdf")) {
+    if (lowerFilename.endsWith(".pdf")) {
       try {
         // pdf-parse exports PDFParse as a class
         const pdfParseModule = require("pdf-parse");
@@ -30,7 +31,7 @@ export async function extractText(path: string): Promise<string> {
       }
     }
 
-    if (path.endsWith(".docx")) {
+    if (lowerFilename.endsWith(".docx")) {
       try {
         const text = await parseDocx(buffer);
         return text;
@@ -46,6 +47,18 @@ export async function extractText(path: string): Promise<string> {
 
     // For text files or unknown formats
     return buffer.toString();
+  } catch (error) {
+    console.error("Text extraction error:", error);
+    throw error;
+  }
+}
+
+//  * Extract text from a file path (kept for backward compatibility if needed)
+export async function extractText(path: string): Promise<string> {
+  try {
+    const buffer = fs.readFileSync(path);
+    const filename = path.split("/").pop() || path.split("\\").pop() || "";
+    return await extractTextFromBuffer(buffer, filename);
   } catch (error) {
     console.error("Text extraction error:", error);
     throw error;
