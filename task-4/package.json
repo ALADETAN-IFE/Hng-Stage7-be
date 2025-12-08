@@ -15,6 +15,8 @@
   "author": "IfeCodes",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.946.0",
+    "@aws-sdk/s3-request-presigner": "^3.946.0",
     "@openrouter/sdk": "^0.2.9",
     "@types/better-sqlite3": "^7.6.13",
     "axios": "^1.13.2",
