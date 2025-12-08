@@ -12,7 +12,7 @@ You are an AI that analyzes documents.
 Given the text below, return ONLY valid JSON (no markdown, no code blocks, just the raw JSON):
 {
   "summary": "...",
-  "type": "invoice | letter | cv | report | unknown",
+  "type": "invoice | letter | cv | report",
   "metadata": {
     "date": "...",
     "sender": "...",
@@ -20,6 +20,9 @@ Given the text below, return ONLY valid JSON (no markdown, no code blocks, just 
     "other": "..."
   }
 }
+
+IMPORTANT: Always classify the document as one of the four types (invoice, letter, cv, or report or the type of document). Choose the most appropriate type based on the document content.
+and also for the metadata return null or the correct values, if the type is (invoice, letter, cv, or report) none of the metadata should be empty
 
 TEXT:
 ${text}
