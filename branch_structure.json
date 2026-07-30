@@ -1,0 +1,30 @@
+{
+  "default_branch": "main",
+  "branches": [
+    "main",
+    "origin",
+    "repoguard/fixes-1781318986384",
+    "repoguard/fixes-1781875568538",
+    "repoguard/fixes-1785447392965",
+    "repoguard/fixes-1790945112277",
+    "repoguard/fixes-1791605246099"
+  ],
+  "parent": {
+    "main": null,
+    "origin": "main",
+    "repoguard/fixes-1781318986384": "main",
+    "repoguard/fixes-1781875568538": "main",
+    "repoguard/fixes-1785447392965": "main",
+    "repoguard/fixes-1790945112277": "main",
+    "repoguard/fixes-1791605246099": "main"
+  },
+  "order": [
+    "main",
+    "origin",
+    "repoguard/fixes-1781318986384",
+    "repoguard/fixes-1781875568538",
+    "repoguard/fixes-1785447392965",
+    "repoguard/fixes-1790945112277",
+    "repoguard/fixes-1791605246099"
+  ]
+}
